@@ -1,0 +1,15 @@
+.aside-container {
+  padding: 16px;
+  background: var(--card);
+  border-left: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow: auto;
+  height: 100%;
+}
+h3 {
+  font-size: 14px;
+  margin: 0 0 4px;
+  color: var(--primary-ink);
+}
