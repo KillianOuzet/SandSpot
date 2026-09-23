@@ -88,3 +88,5 @@ obj/
 !.vscode/mcp.json
 .history/*
 *.sublime-workspace
+
+.angular/
