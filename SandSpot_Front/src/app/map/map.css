@@ -1,11 +1,16 @@
 .map-container {
-  position: relative;
-  background: var(--water);
   height: 100%;
-}
-svg {
-  position: absolute;
-  inset: 0;
   width: 100%;
+  position: relative;
+}
+
+#map {
   height: 100%;
+  width: 100%;
+  z-index: 1; /* S'assure que la carte reste en fond */
+}
+
+.custom-pin {
+  background: transparent !important;
+  border: none !important;
 }
