@@ -1,20 +1,23 @@
 /* Import des polices depuis Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700&family=Inter:wght@400;500;600&display=swap');
 
+/* Import du CSS de la librarie Leaflet */
+@import 'leaflet/dist/leaflet.css';
+
 /* Variables du thème Turquoise & soleil par défaut */
 :root {
-  --bg: #FFFDF8; 
-  --card: #FFFFFF; 
-  --wash: #FFF3DC;
-  --primary: #2FB8A6; 
-  --primary-ink: #0E7A6C;
-  --accent: #FFB648; 
-  --coral: #FF7A5C;
-  --water: #DFF4F0;
-  --ink: #4A4237; 
-  --ink-soft: #A79C87;
-  --line: rgba(74,66,55,0.10);
-  --radius: 16px; 
+  --bg: #fffdf8;
+  --card: #ffffff;
+  --wash: #fff3dc;
+  --primary: #2fb8a6;
+  --primary-ink: #0e7a6c;
+  --accent: #ffb648;
+  --coral: #ff7a5c;
+  --water: #dff4f0;
+  --ink: #4a4237;
+  --ink-soft: #a79c87;
+  --line: rgba(74, 66, 55, 0.1);
+  --radius: 16px;
   --radius-sm: 10px;
 }
 
@@ -30,7 +33,8 @@ body {
   background: var(--bg);
 }
 
-.brand, h3 {
+.brand,
+h3 {
   font-family: 'Baloo 2', sans-serif;
   font-weight: 700;
 }
