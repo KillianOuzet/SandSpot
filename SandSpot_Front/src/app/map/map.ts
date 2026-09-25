@@ -10,6 +10,7 @@ import * as L from 'leaflet';
 })
 export class Map implements AfterViewInit {
   private map: any;
+  private lastMarkerSelected: any;
 
   // Fausses données temporaire (Les spots de beach volley)
   private fakeSpots = [
@@ -34,12 +35,12 @@ export class Map implements AfterViewInit {
   }
 
   private initMap(): void {
-    // 1. Initialisation de la carte (Centrée sur La Rochelle, Zoom 13)
+    // Initialisation de la carte (Centrée sur La Rochelle, Zoom 13)
     this.map = L.map('map', {
       zoomControl: false, // On désactive le zoom par défaut pour garder une interface épurée
     }).setView([46.15, -1.15], 13);
 
-    // 2. Ajout du fond de carte OpenStreetMap
+    // Ajout du fond de carte OpenStreetMap
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
       attribution: '© OpenStreetMap',
@@ -47,14 +48,15 @@ export class Map implements AfterViewInit {
   }
 
   // Construit le pin SVG (couleur + badge selon le statut)
-  private buildPinIcon(busy: boolean, alertCount: number): L.DivIcon {
-    const fill = busy ? '#FF7A5C' : '#2FB8A6'; // corail si alerte, teal sinon
-    const badge = busy
-      ? `<div style="position:absolute;top:-3px;right:-4px;width:15px;height:15px;
+  private buildPinIcon(isSelected: boolean, alertCount: number): L.DivIcon {
+    const fill = isSelected ? '#FF7A5C' : '#2FB8A6'; // corail si alerte, teal sinon
+    const badge =
+      alertCount > 0
+        ? `<div style="position:absolute;top:-3px;right:-4px;width:15px;height:15px;
            border-radius:50%;background:#FF7A5C;color:#fff;font-size:9px;
            display:flex;align-items:center;justify-content:center;
            font-family:sans-serif;">${alertCount}</div>`
-      : '';
+        : '';
 
     const svg = `
       <div style="position:relative;width:26px;height:32px;">
@@ -79,17 +81,9 @@ export class Map implements AfterViewInit {
   }
 
   private addSpots(): void {
-    // On crée une icône HTML personnalisée pour reprendre ton design de pin 📍
-    const spotIcon = L.divIcon({
-      html: '📍',
-      className: 'custom-pin',
-      iconSize: [30, 30],
-      iconAnchor: [15, 30], // Pour que la pointe du marqueur soit exactement sur les coordonnées
-    });
-
-    // 3. Boucle sur nos fausses données pour ajouter les marqueurs
+    // Boucle sur nos fausses données pour ajouter les marqueurs
     this.fakeSpots.forEach((spot) => {
-      const icon = this.buildPinIcon(spot.busy, spot.alertCount);
+      const icon = this.buildPinIcon(false, spot.alertCount);
       const marker = L.marker([spot.lat, spot.lng], { icon: icon, title: spot.name }).addTo(
         this.map,
       );
@@ -97,11 +91,21 @@ export class Map implements AfterViewInit {
       L.setOptions(marker, {
         idAlerte: spot.id,
         nameAlerte: spot.name,
+        alertCount: spot.alertCount,
       });
 
       marker.on('click', (e) => {
+        if (this.lastMarkerSelected) {
+          this.lastMarkerSelected.setIcon(
+            this.buildPinIcon(false, this.lastMarkerSelected.options.alertCount),
+          );
+        }
+        e.target.setIcon(this.buildPinIcon(true, e.target.options.alertCount));
+        this.map.setView(e.target.getLatLng(), 13);
         console.log(e.target.options.idAlerte);
         console.log(e.target.options.nameAlerte);
+
+        this.lastMarkerSelected = e.target;
       });
 
       // Pour faire un popup au clic d'un marqueur
