@@ -2,14 +2,14 @@ namespace Domain.Entities;
 
 public class Review
 {
-    public int IdReview { get; set; }
-    public int Note { get; set; }
+    public int Id { get; set; }
+    public int Rating { get; set; }
     public string? Comment { get; set; }
-    public DateTime DateReview { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-    public int IdUser { get; set; }
-    public User User { get; set; } = null!;
-
-    public int IdZone { get; set; }
+    public int AuthorId { get; set; }
+    public int ZoneId { get; set; }
+    
+    public User Author { get; set; } = null!;
     public Zone Zone { get; set; } = null!;
 }
