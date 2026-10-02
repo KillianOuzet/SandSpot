@@ -1,0 +1,35 @@
+.mypage {
+  padding: 24px 30px;
+  background: var(--bg);
+  min-height: 600px;
+}
+
+.mypage h2 {
+  margin: 0 0 14px;
+  font-size: 19px;
+  color: var(--primary-ink);
+}
+
+.mytabs {
+  display: inline-flex;
+  background: var(--wash);
+  border-radius: 999px;
+  padding: 3px;
+  margin-bottom: 18px;
+}
+
+.mytab {
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 7px 18px;
+  border-radius: 999px;
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.mytab.on {
+  background: var(--card);
+  color: var(--primary-ink);
+  box-shadow: 0 1px 4px rgba(74, 66, 55, 0.12);
+}

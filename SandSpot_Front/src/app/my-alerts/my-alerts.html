@@ -1,0 +1,22 @@
+<div class="mypage">
+  <h2>Mes alertes</h2>
+
+  <div class="mytabs">
+    <!-- On lit le signal avec activeTab() pour appliquer la classe active -->
+    <div class="mytab" [class.on]="activeTab() === 'created'" (click)="setTab('created')">
+      Créées par moi
+    </div>
+    <div class="mytab" [class.on]="activeTab() === 'joined'" (click)="setTab('joined')">
+      Rejointes
+    </div>
+  </div>
+
+  <!-- Le @for itère sur la liste filtrée calculée -->
+  @for (item of filteredAlerts(); track item.id) {
+    <!-- On injecte la donnée 'item' dans la propriété '[alert]' attendue par l'enfant -->
+    <app-alert-card [alert]="item"></app-alert-card>
+  } @empty {
+    <!-- S'affiche automatiquement si la liste est vide -->
+    <p style="color: var(--ink-soft); font-size: 13px">Aucune alerte dans cette catégorie.</p>
+  }
+</div>

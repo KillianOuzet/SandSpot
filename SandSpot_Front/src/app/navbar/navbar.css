@@ -32,7 +32,7 @@
   cursor: pointer;
 }
 
-.navlinks span:first-child {
+.navlinks span.active {
   color: var(--primary-ink);
 }
 
