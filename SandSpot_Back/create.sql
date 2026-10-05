@@ -8,6 +8,8 @@ DROP TABLE IF EXISTS zone CASCADE;
 DROP TABLE IF EXISTS "user" CASCADE;
 DROP TABLE IF EXISTS role CASCADE;
 
+CREATE EXTENSION IF NOT EXISTS postgis;
+
 -- 1. Table ROLE
 CREATE TABLE role (
     id SERIAL PRIMARY KEY,
@@ -28,12 +30,13 @@ CREATE TABLE "user" (
 CREATE TABLE zone (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    latitude DOUBLE PRECISION NOT NULL,
-    longitude DOUBLE PRECISION NOT NULL,
+    location GEOMETRY(Point, 4326) NOT NULL, -- Point GPS (SRID 4326 = WGS84 standard)
     address VARCHAR(255) NOT NULL,
     city VARCHAR(100) NOT NULL,
     postal_code VARCHAR(10) NOT NULL
 );
+
+CREATE INDEX idx_zone_location ON zone USING GIST (location);
 
 -- 4. Table LEVEL (Ex: Débutant, Intermédiaire, Avancé)
 CREATE TABLE level (
