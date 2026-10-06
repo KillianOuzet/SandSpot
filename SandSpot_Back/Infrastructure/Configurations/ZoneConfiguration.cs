@@ -13,8 +13,7 @@ public class ZoneConfiguration : IEntityTypeConfiguration<Zone>
 
         builder.Property(z => z.Id).HasColumnName("id");
         builder.Property(z => z.Name).HasColumnName("name").HasMaxLength(100).IsRequired();
-        builder.Property(z => z.Latitude).HasColumnName("latitude").IsRequired();
-        builder.Property(z => z.Longitude).HasColumnName("longitude").IsRequired();
+        builder.Property(z => z.Location).HasColumnName("location").HasColumnType("geometry(Point, 4326)").IsRequired();
         builder.Property(z => z.Address).HasColumnName("address").HasMaxLength(255).IsRequired();
         builder.Property(z => z.City).HasColumnName("city").HasMaxLength(100).IsRequired();
         builder.Property(z => z.PostalCode).HasColumnName("postal_code").HasMaxLength(10).IsRequired();
