@@ -15,6 +15,43 @@ public class ZoneRepository : IZoneRepository
     {
         _context = context;
     }
+    
+    public async Task<List<ZoneDto>> GetAll(Point? point = null)
+    {
+        IQueryable<ZoneDto> query;
+
+        if (point != null)
+        {
+            query = _context.Zones.Select(z => new ZoneDto
+            {
+                Id = z.Id,
+                Name = z.Name,
+                Latitude = z.Location.Y,
+                Longitude = z.Location.X,
+                Address = z.Address,
+                City = z.City,
+                PostalCode = z.PostalCode,
+                // Math.Round et z.Location.Distance sont traduits en SQL par EF Core !
+                DistanceInKm = Math.Round(z.Location.Distance(point) * 111.32, 2)
+            });
+        }
+        else
+        {
+            query = _context.Zones.Select(z => new ZoneDto
+            {
+                Id = z.Id,
+                Name = z.Name,
+                Latitude = z.Location.Y,
+                Longitude = z.Location.X,
+                Address = z.Address,
+                City = z.City,
+                PostalCode = z.PostalCode,
+                DistanceInKm = 0
+            });
+        }
+        
+        return await query.ToListAsync();
+    }
 
     public async Task<List<ZoneDto>> GetNearbyZones(Point point, double distance, CancellationToken cancellationToken = default)
     {

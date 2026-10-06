@@ -5,7 +5,10 @@ using Domain.Entities;
 namespace Application.Interfaces;
 
 public interface IZoneRepository
-{ 
+{
+
+    Task<List<ZoneDto>> GetAll(Point? point = null);
+    
     /// <summary>
     /// Renvoie les zones de la base de données qui sont dans le périmètre donné
     /// </summary>

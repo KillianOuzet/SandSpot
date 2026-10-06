@@ -16,6 +16,14 @@ public class ZonesController : ControllerBase
         _metierZone = metierZone;
     }
     
+    public async Task<ActionResult<List<ZoneDto>>> GetAllZones(
+        [FromQuery] double? latitude,
+        [FromQuery] double? longitude)
+    {
+        var zones = await _metierZone.GetAllZonesAsync(latitude, longitude);
+        return Ok(zones);
+    }
+    
     /// <summary>
     /// Récupère les terrains de beach-volley situés dans un rayon géometrique autour d'un point GPS.
     /// Ex: GET /api/zones/nearby?latitude=46.1591&longitude=-1.1517&radiusInKm=20
