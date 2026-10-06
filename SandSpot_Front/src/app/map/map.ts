@@ -1,9 +1,9 @@
-import { setOptions } from './../../../node_modules/@types/leaflet/index.d';
-import { Component, AfterViewInit } from '@angular/core';
+import { Component, AfterViewInit, inject } from '@angular/core';
 import * as L from 'leaflet';
+import 'leaflet.markercluster';
+import { ZoneService, Zone } from '../core/zone';
 
 @Component({
-  imports: [],
   selector: 'app-map',
   styleUrl: './map.css',
   templateUrl: './map.html',
@@ -11,45 +11,36 @@ import * as L from 'leaflet';
 export class Map implements AfterViewInit {
   private map: any;
   private lastMarkerSelected: any;
+  private markerClusterGroup: any;
 
-  // Fausses données temporaire (Les spots de beach volley)
-  private fakeSpots = [
-    {
-      id: 1,
-      name: 'Plage de la Concurrence',
-      lat: 46.155,
-      lng: -1.161,
-      busy: false,
-      alertCount: 0,
-    },
-    { id: 2, name: 'Plage des Minimes', lat: 46.14086, lng: -1.17114, busy: true, alertCount: 2 },
-    { id: 3, name: 'Beach Stadium Aytré', lat: 46.1208, lng: -1.1222, busy: false, alertCount: 0 },
-  ];
+  private zoneService = inject(ZoneService);
 
-  constructor() {}
-
-  // On utilise AfterViewInit car il faut que la div #map soit créée dans le HTML AVANT de charger Leaflet
   ngAfterViewInit(): void {
     this.initMap();
-    this.addSpots();
+    this.loadZones();
   }
 
   private initMap(): void {
-    // Initialisation de la carte (Centrée sur La Rochelle, Zoom 13)
     this.map = L.map('map', {
-      zoomControl: false, // On désactive le zoom par défaut pour garder une interface épurée
-    }).setView([46.15, -1.15], 13);
+      zoomControl: false,
+    }).setView([46.15, -1.15], 13); // Centré sur La Rochelle
 
-    // Ajout du fond de carte OpenStreetMap
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
       attribution: '© OpenStreetMap',
     }).addTo(this.map);
+
+    // Initialisation du groupe de cluster
+    this.markerClusterGroup = L.markerClusterGroup({
+      disableClusteringAtZoom: 16, // À partir d'un certain zoom, on sépare tout
+      spiderfyOnMaxZoom: true, // Si des points sont au millimètre près, ils s'écartent en toile d'araignée
+    });
+
+    this.map.addLayer(this.markerClusterGroup);
   }
 
-  // Construit le pin SVG (couleur + badge selon le statut)
   private buildPinIcon(isSelected: boolean, alertCount: number): L.DivIcon {
-    const fill = isSelected ? '#FF7A5C' : '#2FB8A6'; // corail si alerte, teal sinon
+    const fill = isSelected ? '#FF7A5C' : '#2FB8A6';
     const badge =
       alertCount > 0
         ? `<div style="position:absolute;top:-3px;right:-4px;width:15px;height:15px;
@@ -73,45 +64,50 @@ export class Map implements AfterViewInit {
 
     return L.divIcon({
       html: svg,
-      className: 'custom-pin', // important : voir CSS ci-dessous
+      className: 'custom-pin',
       iconSize: [26, 32],
       iconAnchor: [13, 32], // pointe du pin sur les coordonnées exactes
       popupAnchor: [0, -28],
     });
   }
 
-  private addSpots(): void {
-    // Boucle sur nos fausses données pour ajouter les marqueurs
-    this.fakeSpots.forEach((spot) => {
-      const icon = this.buildPinIcon(false, spot.alertCount);
-      const marker = L.marker([spot.lat, spot.lng], { icon: icon, title: spot.name }).addTo(
-        this.map,
-      );
+  private loadZones(): void {
+    this.zoneService.fetchZones().subscribe({
+      next: (zones: Zone[]) => {
+        this.addSpotsToMap(zones);
+      },
+      error: (err) => console.error('Erreur lors de la récupération des zones', err),
+    });
+  }
 
-      L.setOptions(marker, {
-        idAlerte: spot.id,
-        nameAlerte: spot.name,
-        alertCount: spot.alertCount,
+  private addSpotsToMap(zones: Zone[]): void {
+    this.markerClusterGroup.clearLayers();
+
+    zones.forEach((zone) => {
+      const icon = this.buildPinIcon(false, 0);
+
+      const marker = L.marker([zone.latitude, zone.longitude], {
+        icon: icon,
+        title: zone.name,
       });
+
+      L.setOptions(marker, { zoneData: zone });
 
       marker.on('click', (e) => {
         if (this.lastMarkerSelected) {
-          this.lastMarkerSelected.setIcon(
-            this.buildPinIcon(false, this.lastMarkerSelected.options.alertCount),
-          );
+          this.lastMarkerSelected.setIcon(this.buildPinIcon(false, 0));
         }
-        e.target.setIcon(this.buildPinIcon(true, e.target.options.alertCount));
-        this.map.setView(e.target.getLatLng(), 13);
-        console.log(e.target.options.idAlerte);
-        console.log(e.target.options.nameAlerte);
 
+        e.target.setIcon(this.buildPinIcon(true, 0));
+
+        const clickedZone = e.target.options.zoneData as Zone;
+        console.log('Zone sélectionnée :', clickedZone.name);
+
+        this.map.setView(e.target.getLatLng(), 15);
         this.lastMarkerSelected = e.target;
       });
 
-      // Pour faire un popup au clic d'un marqueur
-      // marker.bindPopup(
-      //   `<b>${spot.name}</b><br>Statut: ${spot.busy ? '🔥 Alerte en cours' : 'Calme'}`,
-      // );
+      this.markerClusterGroup.addLayer(marker);
     });
   }
 }
