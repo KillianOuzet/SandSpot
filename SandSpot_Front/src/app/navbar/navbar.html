@@ -2,10 +2,12 @@
   <div class="brand">Sandspot<span class="dot"></span></div>
 
   <div class="navlinks">
-    <span routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
-      >Carte</span
-    >
-    <span routerLink="/mes-alertes" routerLinkActive="active">Mes alertes</span>
+    <!-- [routerLinkActiveOptions]="{exact: true}" évite que "Carte" soit toujours actif -->
+    <span routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+      Carte
+    </span>
+
+    <span routerLink="/mes-alertes" routerLinkActive="active"> Mes alertes </span>
   </div>
 
   <div class="search">🔍 Ville, adresse...</div>

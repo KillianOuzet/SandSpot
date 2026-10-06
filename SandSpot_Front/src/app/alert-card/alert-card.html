@@ -1,0 +1,21 @@
+<div class="mycard" [class.past]="alert().status === 'Terminée'">
+  <div class="mycard-info">
+    <h4>
+      {{ alert().title }}
+      <span class="status" [class]="alert().status">{{ alert().status }}</span>
+    </h4>
+    <div class="mycard-meta">
+      <span>{{ alert().date }}</span>
+      <span>{{ alert().playersCount }}</span>
+      <span>{{ alert().details }}</span>
+    </div>
+  </div>
+
+  @if (alert().status == 'Terminée') {
+    <button class="btn-out">Voir</button>
+  } @else if (alert().isCreatedByMe) {
+    <button class="btn-out">Modifier</button>
+  } @else {
+    <button class="btn-out coral">Quitter le groupe</button>
+  }
+</div>
