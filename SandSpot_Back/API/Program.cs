@@ -12,13 +12,22 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddDbContext<ApplicationDbContext>(options =>options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseNpgsql(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        o => o.UseNetTopologySuite() // <--- Active PostGIS pour EF Core
+    ));
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
+
 // Injection de dépendance pour relier le métier de l'application
-// avec l'utilisation des librairies de l'Infrastrucure
+// // avec l'utilisation des librairies de l'Infrastrucure
+builder.Services.AddScoped<IZoneRepository,ZoneRepository>();
+builder.Services.AddScoped<MetierZone>();
+builder.Services.AddHttpClient<ZoneImportService>();
+
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 builder.Services.AddScoped<IJwtProvider, JwtProvider>();
 
@@ -67,21 +76,17 @@ using (var scope = app.Services.CreateScope())
     var logger = services.GetRequiredService<ILogger<Program>>();
     try
     {
-        var context = services.GetRequiredService<ApplicationDbContext>();
+        // Import des données des terrains de beach au lancement de l'application ( a enlever plus tard)
+        // Remplace IZoneImportService ou ZoneImportService selon le nom de ton service
+        var importService = services.GetRequiredService<ZoneImportService>();
         
-        // Teste si la connexion réseau/identifiants fonctionne
-        if (context.Database.CanConnect())
-        {
-            logger.LogInformation("✅ Connexion à la base de données PostgreSQL réussie !");
-        }
-        else
-        {
-            logger.LogError("❌ Impossible de se connecter à la base de données.");
-        }
+        logger.LogInformation("⏳ Lancement de l'import des terrains de beach-volley...");
+        int count = await importService.ImportZonesFromOpenDataAsync();
+        logger.LogInformation("✅ Import terminé : {Count} terrains ajoutés en BDD !", count);
     }
     catch (Exception ex)
     {
-        logger.LogError(ex, "❌ Erreur lors de la connexion à la base de données.");
+        logger.LogError(ex, "❌ Erreur lors de l'importation OpenData.");
     }
 }
 
