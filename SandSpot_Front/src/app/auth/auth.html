@@ -1,0 +1,111 @@
+<div class="modal-wrap">
+  <!-- Le fond sombre cliquable pour fermer la modale -->
+  <div class="modal-dim" (click)="closeModal.emit()"></div>
+
+  <div class="modal-card">
+    <h3>{{ activeTab() === 'login' ? 'Connexion' : 'Créer un compte' }}</h3>
+
+    <div class="auth-sub">
+      {{
+        activeTab() === 'login'
+          ? 'Connecte-toi pour créer une alerte ou rejoindre un groupe.'
+          : 'Rejoins la communauté SandSpot en 30 secondes.'
+      }}
+    </div>
+
+    <!-- Le système d'onglets -->
+    <div class="auth-tabs">
+      <div class="auth-tab" [class.on]="activeTab() === 'login'" (click)="setTab('login')">
+        Se connecter
+      </div>
+      <div class="auth-tab" [class.on]="activeTab() === 'register'" (click)="setTab('register')">
+        Créer un compte
+      </div>
+    </div>
+
+    <form [formGroup]="authForm" (ngSubmit)="onSubmit()">
+      <!-- Champ Pseudo -->
+      @if (activeTab() === 'register') {
+        <div class="form-group">
+          <label>Pseudo</label>
+          <input
+            type="text"
+            class="form-input"
+            [class.has-error]="isInvalid('username')"
+            formControlName="username"
+            placeholder="Ton pseudo"
+          />
+          @if (hasError('username', 'required')) {
+            <div class="field-error">Le pseudo est requis.</div>
+          }
+        </div>
+      }
+
+      <!-- Champ Email -->
+      <div class="form-group">
+        <label>Email</label>
+        <input
+          type="email"
+          class="form-input"
+          [class.has-error]="isInvalid('email')"
+          formControlName="email"
+          placeholder="toi@exemple.com"
+        />
+        @if (hasError('email', 'required')) {
+          <div class="field-error">L'email est requis.</div>
+        } @else if (hasError('email', 'email')) {
+          <div class="field-error">Le format de l'email n'est pas valide.</div>
+        }
+      </div>
+
+      <!-- Champ Mot de passe -->
+      <div class="form-group">
+        <label>Mot de passe</label>
+        <input
+          type="password"
+          class="form-input"
+          [class.has-error]="isInvalid('password')"
+          formControlName="password"
+          placeholder="••••••••"
+        />
+        @if (hasError('password', 'required')) {
+          <div class="field-error">Le mot de passe est requis.</div>
+        } @else if (hasError('password', 'minlength')) {
+          <div class="field-error">Doit contenir au moins 6 caractères.</div>
+        }
+      </div>
+
+      <!-- Message d'erreur dynamique -->
+      @if (errorMessage()) {
+        <div class="error-text" style="color: var(--coral); font-size: 12px; margin-bottom: 10px">
+          {{ errorMessage() }}
+        </div>
+      }
+
+      @if (activeTab() === 'login') {
+        <a class="auth-link" style="text-align: right; display: block">Mot de passe oublié ?</a>
+      }
+
+      <!-- Le bouton est désactivé si le formulaire n'est pas valide (ex: email mal écrit) -->
+      <button
+        type="submit"
+        class="modal-cta"
+        [disabled]="authForm.invalid"
+        [style.opacity]="authForm.invalid ? '0.6' : '1'"
+      >
+        {{ activeTab() === 'login' ? 'Se connecter' : 'Créer mon compte' }}
+      </button>
+
+      <!-- Lien de bascule rapide en bas -->
+      <div class="auth-fine" style="cursor: pointer">
+        @if (activeTab() === 'login') {
+          Pas encore de compte ?
+          <b style="color: var(--primary-ink)" (click)="setTab('register')">Créer un compte</b>
+        } @else {
+          Déjà un compte ?
+          <b style="color: var(--primary-ink)" (click)="setTab('login')">Se connecter</b>
+        }
+      </div>
+    </form>
+  </div>
+</div>

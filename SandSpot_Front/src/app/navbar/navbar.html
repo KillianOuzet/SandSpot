@@ -13,10 +13,15 @@
   <div class="search">🔍 Ville, adresse...</div>
 
   <div class="topbar-right">
-    <div class="bell">
-      🔔
-      <span class="ping"></span>
-    </div>
-    <div class="avatar">JD</div>
+    @if (authService.isLoggedIn()) {
+      <div class="bell">🔔<span class="ping"></span></div>
+      <div class="avatar" (click)="logout()" title="Se déconnecter">JD</div>
+    } @else {
+      <button class="login-btn" (click)="openAuthModal()">Se connecter</button>
+    }
   </div>
 </div>
+
+@if (isAuthModalOpen()) {
+  <app-auth (closeModal)="closeAuthModal()"></app-auth>
+}
