@@ -1,6 +1,7 @@
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Application.Interfaces;
+using Infrastructure.Repositories;
 using Application.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,10 +17,9 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 // Injection du service d'import d'OpenData
-builder.Services.AddHttpClient<IZoneImportService, ZoneImportService>();
+builder.Services.AddScoped<IZoneRepository,ZoneRepository>();
 builder.Services.AddScoped<MetierZone>();
-
-
+builder.Services.AddHttpClient<ZoneImportService>();
 
 var app = builder.Build();
 
@@ -32,7 +32,7 @@ using (var scope = app.Services.CreateScope())
     {
         // Import des données des terrains de beach au lancement de l'application ( a enlever plus tard)
         // Remplace IZoneImportService ou ZoneImportService selon le nom de ton service
-        var importService = services.GetRequiredService<IZoneImportService>();
+        var importService = services.GetRequiredService<ZoneImportService>();
         
         logger.LogInformation("⏳ Lancement de l'import des terrains de beach-volley...");
         int count = await importService.ImportZonesFromOpenDataAsync();
