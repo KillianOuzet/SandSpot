@@ -13,6 +13,18 @@ public class MetierZone
         _zoneRepository = zoneRepository;
     }
 
+    public async Task<List<ZoneDto>> GetAllZonesAsync(double? latitude, double? longitude)
+    {
+        Point? userPoint = null;
+    
+        if (latitude.HasValue && longitude.HasValue)
+        {
+            userPoint = new Point(longitude.Value, latitude.Value) { SRID = 4326 };
+        }
+    
+        return await _zoneRepository.GetAll(userPoint);
+    }
+
     public async Task<List<ZoneDto>> GetZonesNearbyAsync(double latitude, double longitude, double radiusInKm, CancellationToken cancellationToken = default)
     {
         // Point recherché (Longitude X, Latitude Y)
