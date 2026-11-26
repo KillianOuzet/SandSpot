@@ -1,4 +1,16 @@
-<div class="aside-container">
+<aside class="aside-container">
   <h3>Alertes à proximité</h3>
-  <!-- TODO -->
-</div>
+  <div class="aside-subtitle">4 spots · 2 alertes actives dans la zone</div>
+
+  <div class="alert-card">
+    <p class="alert-title">{{ alertTitle }}</p>
+    <div class="alert-meta">
+      <span>{{ date }}, {{ hour }}h</span>
+      @if (playerCount == 1) {
+        <span>1 joueur</span>
+      } @else {
+        <span>{{ playerCount }} joueurs</span>
+      }
+    </div>
+  </div>
+</aside>
