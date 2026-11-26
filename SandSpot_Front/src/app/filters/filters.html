@@ -1,4 +1,46 @@
 <div class="filters-container">
   <h3>Filtres</h3>
-  <!-- TODO -->
+
+  <!-- Slider de distance -->
+  <div class="filter-group">
+    <span class="f-label">Distance : {{ distance }} km</span>
+    <input
+      type="range"
+      min="1"
+      max="50"
+      [ngModel]="distance"
+      (ngModelChange)="onDistanceSliderChange($event)">
+  </div>
+
+  <!-- Période choisie -->
+  <div class="filter-group">
+    <span class="f-label">Quand ?</span>
+    <div class="chips">
+      @for (period of periods; track period) {
+        <button
+          type="button"
+          class="chip"
+          [class.on]="selectedPeriod === period"
+          (click)="setPeriod(period)">
+          {{ period }}
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- Equipement disponible -->
+  <div class="filter-group">
+    <span class="f-label">Matériel disponible</span>
+    <div class="chips">
+      @for (equipment of availableEquipment; track equipment){
+        <button
+          type="button"
+          class="chip"
+          [class.on]="selectedEquipment.has(equipment)"
+          (click)="toggleEquipment(equipment)">
+          {{ equipment }}
+        </button>
+      }
+    </div>
+  </div>
 </div>

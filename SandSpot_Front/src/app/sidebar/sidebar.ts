@@ -6,4 +6,9 @@ import { Component } from '@angular/core';
   styleUrl: './sidebar.css',
   templateUrl: './sidebar.html',
 })
-export class Sidebar {}
+export class Sidebar {
+  alertTitle: string = "Plage des Minimes";
+  date: string = "Aujourd'hui";
+  hour: string = "18";
+  playerCount: number = 4;
+}
